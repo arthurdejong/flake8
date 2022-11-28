@@ -18,6 +18,7 @@ from typing import Sequence
 from flake8 import exceptions
 
 COMMA_SEPARATED_LIST_RE = re.compile(r"[,\s]")
+NORMALIZE_COMMA_SEPARATED_LIST_RE = re.compile(r"#.*$", flags=re.MULTILINE)
 LOCAL_PLUGIN_LIST_RE = re.compile(r"[,\t\n\r\f\v]")
 NORMALIZE_PACKAGE_NAME_RE = re.compile(r"[-_.]+")
 
@@ -36,6 +37,9 @@ def parse_comma_separated_list(
         List of values with whitespace stripped.
     """
     assert isinstance(value, str), value
+
+    # Strip inline comments from value
+    value = NORMALIZE_COMMA_SEPARATED_LIST_RE.sub(" ", value)
 
     separated = regexp.split(value)
     item_gen = (item.strip() for item in separated)
